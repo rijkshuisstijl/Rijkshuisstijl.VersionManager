@@ -1,0 +1,13 @@
+﻿@using Orchard.ContentManagement
+@using Orchard.Utility.Extensions
+@{
+    Script.Require("ShapesBase");
+    ContentPart contentPart = Model.ContentPart;
+}
+
+<ul class="pageStatus">
+    <li>Id: @contentPart.ContentItem.Id&nbsp;&#124;&nbsp;</li>
+    <li>
+    @Html.ActionLink(T("Version: {0}", contentPart.ContentItem.Version).Text, "List", "Admin", new {area = "Rijkshuisstijl.VersionManager", id = contentPart.ContentItem.Id, returnUrl = Request.ToUrlString()}, null)
+    &nbsp;&#124;&nbsp;
+</ul>

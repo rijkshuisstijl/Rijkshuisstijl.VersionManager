@@ -1,0 +1,12 @@
+﻿Name: Rijkshuisstijl.VersionManager
+AntiForgery: enabled
+Author: CIBG
+Website: http://www.cibg.nl
+Version: 0.1
+OrchardVersion: 1.7
+Description: Manage versions of content items
+Category: Content
+Dependencies: Orchard.Autoroute
+Features:
+    Rijkshuisstijl.VersionManager:
+        Description: Manage versions of content items.

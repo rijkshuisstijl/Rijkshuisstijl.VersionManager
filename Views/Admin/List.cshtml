@@ -1,0 +1,144 @@
+﻿@using Rijkshuisstijl.VersionManager.Models
+@model Rijkshuisstijl.VersionManager.ViewModels.ListViewModel
+@{
+    string latestTitle = Model.ContentInfo.PublishedTitle;
+    string latestPermalink = Model.ContentInfo.PublishedPermalink;
+    Layout.Title = T("Manage versions of {0}", latestTitle);
+    Style.Include("versionmanager.css");
+}
+
+<div id="versions-list">
+
+    <p>@T("There {0} of this content item.", Model.ContentInfo.Versions.Count() == 1 ? "is just one version" : "are " + Model.ContentInfo.Versions.Count() + " versions")</p>
+    <p> Current permalink : @Model.ContentInfo.PublishedPermalink</p>
+
+
+    <fieldset class="contentItems bulk-items">
+        <legend></legend>
+        <ul>
+            @foreach (ContentVersionInfo item in Model.ContentInfo.Versions.OrderByDescending(r => r.Version))
+            {
+                <li>
+                    <div class="summary">
+                        <div class="primary">
+                            <div class="properties">
+                                <h3>@T("Version {0}", item.Version)</h3>
+                                <div class="metadata">
+                                    <ul class="pageStatus">
+                                        <li>
+                                            @if (item.IsPublished.HasValue && (bool) item.IsPublished)
+                                            {
+                                                <img class="icon" src="@Href("~/Modules/Rijkshuisstijl.VersionManager/Content/check.gif")" alt="@T("Published version")" title="@T("This is the published versions")" />
+                                            }
+                                            @if (item.IsPublished.HasValue && !(bool) item.IsPublished)
+                                            {
+                                                <img class="icon" src="@Href("~/Modules/Rijkshuisstijl.VersionManager/Content/uncheck.gif")" alt="@T("Published version")" title="@T("This is the published versions")" />
+                                            }
+                                            Published
+                                            &nbsp;&#124;&nbsp;
+                                        </li>
+                                        <li>
+                                            @if (item.IsLatest.HasValue && (bool) item.IsLatest)
+                                            {
+                                                <img class="icon" src="@Href("~/Modules/Rijkshuisstijl.VersionManager/Content/check.gif")" alt="@T("Latest version")" title="@T("This is the published versions")" />
+                                            }
+                                            @if (item.IsLatest.HasValue && !(bool) item.IsLatest)
+                                            {
+                                                <img class="icon" src="@Href("~/Modules/Rijkshuisstijl.VersionManager/Content/uncheck.gif")" alt="@T("Latest version")" title="@T("This is the published versions")" />
+                                            }
+                                            Latest
+                                        </li>
+                                   
+                                    </ul>
+                                    @if (String.IsNullOrEmpty(item.Description))
+                                    {
+                                        @Html.ActionLink(T("no description").Text, "SetDescription", new {id = Model.ContentInfo.Id, versionId = item.Id}, new {@class = "description"})
+                                    }
+
+                                    else
+                                    {
+                                        @Html.ActionLink(item.Description, "SetDescription", new {id = Model.ContentInfo.Id, versionId = item.Id}, new {@class = "description"})
+                                    }
+                                   
+                                </div>
+                            </div>
+                            <div class="related">
+                                @if (item.IsLatest.HasValue && (bool) item.IsLatest)
+                                {
+                                    @Html.Link(T("Edit").Text, Url.Action("Edit", "Admin", new {area = "Contents", id = Model.ContentInfo.Id, versionId = item.Id}))
+                                    <text>&nbsp;&#124;&nbsp;</text>
+                                }
+                                @if (item.IsPublished.HasValue && (bool) item.IsPublished)
+                                {
+                                    @Html.Link(T("Unpublish").Text, Url.Action("UnsetPublishedVersion", "Admin", new {area = "Rijkshuisstijl.VersionManager", id = Model.ContentInfo.Id, versionId = item.Id}))
+                                    <text>&nbsp;&#124;&nbsp;</text>
+                                }
+                                @if (item.IsPublished.HasValue && !(bool) item.IsPublished)
+                                {
+                                    @Html.Link(T("Publish").Text, Url.Action("SetPublishedVersion", "Admin", new {area = "Rijkshuisstijl.VersionManager", id = Model.ContentInfo.Id, versionId = item.Id}))
+                                    <text>&nbsp;&#124;&nbsp;</text>
+                                }
+                            
+                                @if (item.IsLatest.HasValue && !(bool) item.IsLatest)
+                                {
+                                    @Html.Link(T("Promote to version {0}", Model.ContentInfo.HighestVersion + 1).Text, Url.Action("Promote", "Admin", new {area = "Rijkshuisstijl.VersionManager", id = Model.ContentInfo.Id, versionId = item.Id}))
+                                    <text>&nbsp;&#124;&nbsp;</text>
+                                }
+                                @Html.Link(T("View").Text, Url.Action("Preview", "Item", new {area = "Contents", id = Model.ContentInfo.Id, version = item.Version}))
+                            </div>
+                        </div>
+                        @if (item.Title != latestTitle)
+                        {
+                            <span class="version-metadata">Titel : '@item.Title'&nbsp;&#124;</span>
+                        }
+                        @if (item.Permalink != latestPermalink)
+                        {
+                            <span class="version-metadata">Permalink : @item.Permalink&nbsp;&#124;</span>
+                        }
+                       
+
+                        <span class="version-metadata">Created : @item.Created&nbsp;&#124;&nbsp;Last modified : @item.Modified&nbsp;&#124;&nbsp;Last published : @item.Published&nbsp;&#124;&nbsp;Version record : @item.Id</span>
+                    </div>
+                    <a title="View page" href="@Url.Action("Preview", "Item", new {area = "Contents", id = Model.ContentInfo.Id, version = item.Version})">
+                        <div class="preview">
+                            @if (!String.IsNullOrEmpty(@item.Title))
+                            {
+                                <div class="title-preview">
+                                    @item.Title
+                                </div>
+                            }
+
+                            @if (!String.IsNullOrEmpty(item.IntroFieldText))
+                            {
+                                <div class="intro-preview">
+                                    @if (item.IntroFieldText.Length > 600)
+                                    {
+                                        <text> @item.IntroFieldText.Substring(0, 600)........</text>
+                                    }
+                                    else
+                                    {
+                                        <text> @item.IntroFieldText </text>
+                                    }
+                                </div>
+                            }
+                    
+                            @if (!String.IsNullOrEmpty(item.BodyText))
+                            {
+                                <div class="body-preview">
+                                    @if (item.BodyText.Length > 900)
+                                    {
+                                        <text> @item.BodyText.Substring(0, 900)........</text>
+                                    }
+                                    else
+                                    {
+                                        <text> @item.BodyText </text>
+                                    }
+                                </div>
+                            }
+                        </div> 
+                    </a>
+                </li>
+            }
+        </ul>
+    </fieldset>
+</div>

@@ -1,0 +1,32 @@
+﻿@model Rijkshuisstijl.VersionManager.ViewModels.Admin.SetDescriptionViewModel
+@{
+    Layout.Title = T("Edit the description");
+}
+<div id="version-description">
+     
+    <div class="errormessages">
+        @Html.ValidationSummary()
+    </div>
+
+    @using (Html.BeginFormAntiForgeryPost("SetDescription"))
+    {
+        @Html.HiddenFor(m => m.VersionManagerRecord.ContentItemId)
+        @Html.HiddenFor(m => m.VersionManagerRecord.ContentItemVersionId)
+
+
+        @Html.Label(T("Edit the description").Text, new {@class = "editor-label"})
+        @Html.TextBoxFor(m => m.VersionManagerRecord.Description, new {@class = "textMedium"})
+
+        <fieldset>
+            <legend></legend>
+            <button class="primaryAction" type="submit">@T("Save")</button>
+        </fieldset>
+    }
+</div>
+
+@using (Script.Foot())
+{
+    <script type="text/javascript">
+        document.getElementById("VersionManagerRecord_Description").focus();
+    </script>
+}
