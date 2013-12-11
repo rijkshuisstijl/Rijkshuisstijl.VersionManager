@@ -4,10 +4,10 @@ using Rijkshuisstijl.VersionManager.Models;
 
 #endregion
 
-namespace Rijkshuisstijl.VersionManager.ViewModels
+namespace Rijkshuisstijl.VersionManager.ViewModels.Admin
 {
     public class ListViewModel
     {
-        public ContentInfo ContentInfo { get; set; }
+        public ContentInfoModel ContentInfoModel { get; set; }
     }
 }

@@ -10,12 +10,12 @@
 
     @using (Html.BeginFormAntiForgeryPost("SetDescription"))
     {
-        @Html.HiddenFor(m => m.VersionManagerRecord.ContentItemId)
-        @Html.HiddenFor(m => m.VersionManagerRecord.ContentItemVersionId)
+        @Html.HiddenFor(m => m.ContentItemId)
+        @Html.HiddenFor(m => m.ContentItemVersionId)
 
 
         @Html.Label(T("Edit the description").Text, new {@class = "editor-label"})
-        @Html.TextBoxFor(m => m.VersionManagerRecord.Description, new {@class = "textMedium"})
+        @Html.TextBoxFor(m => m.Description, new {@class = "textMedium"})
 
         <fieldset>
             <legend></legend>

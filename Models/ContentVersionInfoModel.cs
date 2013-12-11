@@ -11,27 +11,28 @@ using Orchard.ContentManagement;
 using Orchard.Core.Common.Fields;
 using Orchard.Core.Common.Models;
 using Orchard.Core.Title.Models;
+using Rijkshuisstijl.VersionManager.DataServices;
 using Rijkshuisstijl.VersionManager.Services;
 
 #endregion
 
 namespace Rijkshuisstijl.VersionManager.Models
 {
-    public class ContentVersionInfo
+    public class ContentVersionInfoModel
     {
         private readonly int _contentItemId;
         private readonly int _contentItemVersionId;
         private readonly int _hoursOffSetUtc;
         private readonly IOrchardServices _orchardServices;
-        private readonly IVersionManagerInfo _versionManagerInfo;
+        private readonly IVersionManagerInfoDataService _versionManagerInfoDataService;
 
-        public ContentVersionInfo(int contentItemId, int contentItemVersionId, IOrchardServices orchardServices, int hoursOffSetUtc, IVersionManagerInfo versionManagerInfo)
+        public ContentVersionInfoModel(int contentItemId, int contentItemVersionId, IOrchardServices orchardServices, int hoursOffSetUtc, IVersionManagerInfoDataService versionManagerInfoDataService)
         {
             _contentItemId = contentItemId;
             _contentItemVersionId = contentItemVersionId;
             _orchardServices = orchardServices;
             _hoursOffSetUtc = hoursOffSetUtc;
-            _versionManagerInfo = versionManagerInfo;
+            _versionManagerInfoDataService = versionManagerInfoDataService;
         }
 
 
@@ -41,7 +42,7 @@ namespace Rijkshuisstijl.VersionManager.Models
             {
                 string returnValue = String.Empty;
 
-                VersionManagerRecord versionManagerInfo = _versionManagerInfo.VersionManagerRecords.FirstOrDefault(r => r.ContentItemId == _contentItemId && r.ContentItemVersionId == _contentItemVersionId);
+                VersionManagerRecord versionManagerInfo = _versionManagerInfoDataService.VersionManagerRecords.FirstOrDefault(r => r.ContentItemId == _contentItemId && r.ContentItemVersionId == _contentItemVersionId);
                 if (versionManagerInfo != null)
                 {
                     returnValue = versionManagerInfo.Description;
@@ -50,7 +51,7 @@ namespace Rijkshuisstijl.VersionManager.Models
             }
             set
             {
-                _versionManagerInfo.Update(new VersionManagerRecord
+                _versionManagerInfoDataService.SetVersionManagerRecord(new VersionManagerRecord
                 {
                     ContentItemId = _contentItemId,
                     ContentItemVersionId = _contentItemVersionId,

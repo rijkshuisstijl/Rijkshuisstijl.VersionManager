@@ -1,22 +1,22 @@
 ﻿@using Rijkshuisstijl.VersionManager.Models
-@model Rijkshuisstijl.VersionManager.ViewModels.ListViewModel
+@model Rijkshuisstijl.VersionManager.ViewModels.Admin.ListViewModel
 @{
-    string latestTitle = Model.ContentInfo.PublishedTitle;
-    string latestPermalink = Model.ContentInfo.PublishedPermalink;
+    string latestTitle = Model.ContentInfoModel.PublishedTitle;
+    string latestPermalink = Model.ContentInfoModel.PublishedPermalink;
     Layout.Title = T("Manage versions of {0}", latestTitle);
     Style.Include("versionmanager.css");
 }
 
 <div id="versions-list">
 
-    <p>@T("There {0} of this content item.", Model.ContentInfo.Versions.Count() == 1 ? "is just one version" : "are " + Model.ContentInfo.Versions.Count() + " versions")</p>
-    <p> Current permalink : @Model.ContentInfo.PublishedPermalink</p>
+    <p>@T("There {0} of this content item.", Model.ContentInfoModel.Versions.Count() == 1 ? "is just one version" : "are " + Model.ContentInfoModel.Versions.Count() + " versions")</p>
+    <p> Current permalink : @Model.ContentInfoModel.PublishedPermalink</p>
 
 
     <fieldset class="contentItems bulk-items">
         <legend></legend>
         <ul>
-            @foreach (ContentVersionInfo item in Model.ContentInfo.Versions.OrderByDescending(r => r.Version))
+            @foreach (ContentVersionInfoModel item in Model.ContentInfoModel.Versions.OrderByDescending(r => r.Version))
             {
                 <li>
                     <div class="summary">
@@ -52,12 +52,12 @@
                                     </ul>
                                     @if (String.IsNullOrEmpty(item.Description))
                                     {
-                                        @Html.ActionLink(T("no description").Text, "SetDescription", new {id = Model.ContentInfo.Id, versionId = item.Id}, new {@class = "description"})
+                                        @Html.ActionLink(T("no description").Text, "SetDescriptionPost", new {id = Model.ContentInfoModel.Id, versionId = item.Id}, new {@class = "description"})
                                     }
 
                                     else
                                     {
-                                        @Html.ActionLink(item.Description, "SetDescription", new {id = Model.ContentInfo.Id, versionId = item.Id}, new {@class = "description"})
+                                        @Html.ActionLink(item.Description, "SetDescriptionPost", new {id = Model.ContentInfoModel.Id, versionId = item.Id}, new {@class = "description"})
                                     }
                                    
                                 </div>
@@ -65,26 +65,26 @@
                             <div class="related">
                                 @if (item.IsLatest.HasValue && (bool) item.IsLatest)
                                 {
-                                    @Html.Link(T("Edit").Text, Url.Action("Edit", "Admin", new {area = "Contents", id = Model.ContentInfo.Id, versionId = item.Id}))
+                                    @Html.Link(T("Edit").Text, Url.Action("Edit", "Admin", new {area = "Contents", id = Model.ContentInfoModel.Id, versionId = item.Id}))
                                     <text>&nbsp;&#124;&nbsp;</text>
                                 }
                                 @if (item.IsPublished.HasValue && (bool) item.IsPublished)
                                 {
-                                    @Html.Link(T("Unpublish").Text, Url.Action("UnsetPublishedVersion", "Admin", new {area = "Rijkshuisstijl.VersionManager", id = Model.ContentInfo.Id, versionId = item.Id}))
+                                    @Html.Link(T("Unpublish").Text, Url.Action("UnsetPublishedVersion", "VersionManager", new {area = "Rijkshuisstijl.VersionManager", id = Model.ContentInfoModel.Id, versionId = item.Id}))
                                     <text>&nbsp;&#124;&nbsp;</text>
                                 }
                                 @if (item.IsPublished.HasValue && !(bool) item.IsPublished)
                                 {
-                                    @Html.Link(T("Publish").Text, Url.Action("SetPublishedVersion", "Admin", new {area = "Rijkshuisstijl.VersionManager", id = Model.ContentInfo.Id, versionId = item.Id}))
+                                    @Html.Link(T("Publish").Text, Url.Action("SetPublishedVersion", "VersionManager", new {area = "Rijkshuisstijl.VersionManager", id = Model.ContentInfoModel.Id, versionId = item.Id}))
                                     <text>&nbsp;&#124;&nbsp;</text>
                                 }
                             
                                 @if (item.IsLatest.HasValue && !(bool) item.IsLatest)
                                 {
-                                    @Html.Link(T("Promote to version {0}", Model.ContentInfo.HighestVersion + 1).Text, Url.Action("Promote", "Admin", new {area = "Rijkshuisstijl.VersionManager", id = Model.ContentInfo.Id, versionId = item.Id}))
+                                    @Html.Link(T("Promote to version {0}", Model.ContentInfoModel.HighestVersion + 1).Text, Url.Action("Promote", "VersionManager", new {area = "Rijkshuisstijl.VersionManager", id = Model.ContentInfoModel.Id, versionId = item.Id}))
                                     <text>&nbsp;&#124;&nbsp;</text>
                                 }
-                                @Html.Link(T("View").Text, Url.Action("Preview", "Item", new {area = "Contents", id = Model.ContentInfo.Id, version = item.Version}))
+                                @Html.Link(T("View").Text, Url.Action("Preview", "Item", new {area = "Contents", id = Model.ContentInfoModel.Id, version = item.Version}))
                             </div>
                         </div>
                         @if (item.Title != latestTitle)
@@ -99,7 +99,7 @@
 
                         <span class="version-metadata">Created : @item.Created&nbsp;&#124;&nbsp;Last modified : @item.Modified&nbsp;&#124;&nbsp;Last published : @item.Published&nbsp;&#124;&nbsp;Version record : @item.Id</span>
                     </div>
-                    <a title="View page" href="@Url.Action("Preview", "Item", new {area = "Contents", id = Model.ContentInfo.Id, version = item.Version})">
+                    <a title="View page" href="@Url.Action("Preview", "Item", new {area = "Contents", id = Model.ContentInfoModel.Id, version = item.Version})">
                         <div class="preview">
                             @if (!String.IsNullOrEmpty(@item.Title))
                             {

@@ -8,28 +8,27 @@ using Orchard.ContentManagement;
 using Orchard.ContentManagement.Records;
 using Orchard.Core.Common.Models;
 using Orchard.Data;
+using Rijkshuisstijl.VersionManager.DataServices;
 using Rijkshuisstijl.VersionManager.Services;
 
 #endregion
 
 namespace Rijkshuisstijl.VersionManager.Models
 {
-    public class ContentInfo
+    public class ContentInfoModel
     {
         private readonly int _contentItemId;
-        private readonly IRepository<ContentItemVersionRecord> _contentItemVersionRepository;
         private readonly IOrchardServices _orchardServices;
         private readonly int _timeOffSet;
-        private readonly IVersionManagerInfo _versionManagerInfo;
-        private List<ContentVersionInfo> _versions = null;
+        private readonly IVersionManagerInfoDataService _versionManagerInfoDataService;
+        private List<ContentVersionInfoModel> _versions = null;
 
-        public ContentInfo(int contentItemId, IOrchardServices orchardServices, int timeOffSet, IRepository<ContentItemVersionRecord> contentItemVersionRepository, IVersionManagerInfo versionManagerInfo)
+        public ContentInfoModel(int contentItemId, IOrchardServices orchardServices, int timeOffSet, IVersionManagerInfoDataService versionManagerInfoDataService)
         {
             _contentItemId = contentItemId;
             _orchardServices = orchardServices;
             _timeOffSet = timeOffSet;
-            _contentItemVersionRepository = contentItemVersionRepository;
-            _versionManagerInfo = versionManagerInfo;
+            _versionManagerInfoDataService = versionManagerInfoDataService;
         }
 
         public int Id
@@ -68,13 +67,13 @@ namespace Rijkshuisstijl.VersionManager.Models
                 {
                     return "<No version found>";
                 }
-                ContentVersionInfo contentVersionInfo = Versions.FirstOrDefault(r => r.IsPublished == true);
-                if (contentVersionInfo != null)
+                ContentVersionInfoModel contentVersionInfoModel = Versions.FirstOrDefault(r => r.IsPublished == true);
+                if (contentVersionInfoModel != null)
                 {
-                    return contentVersionInfo.Title;
+                    return contentVersionInfoModel.Title;
                 }
-                contentVersionInfo = Versions.FirstOrDefault(r => r.IsLatest == true);
-                return contentVersionInfo == null ? "<No title found>" : String.Format("{0} (not published)", contentVersionInfo.Title);
+                contentVersionInfoModel = Versions.FirstOrDefault(r => r.IsLatest == true);
+                return contentVersionInfoModel == null ? "<No title found>" : String.Format("{0} (not published)", contentVersionInfoModel.Title);
             }
         }
 
@@ -86,12 +85,12 @@ namespace Rijkshuisstijl.VersionManager.Models
                 {
                     return "<No version found>";
                 }
-                ContentVersionInfo contentVersionInfo = Versions.FirstOrDefault(r => r.IsPublished == true);
-                if (contentVersionInfo == null)
+                ContentVersionInfoModel contentVersionInfoModel = Versions.FirstOrDefault(r => r.IsPublished == true);
+                if (contentVersionInfoModel == null)
                 {
                     return "<No active permalink found>";
                 }
-                return contentVersionInfo.Permalink;
+                return contentVersionInfoModel.Permalink;
             }
         }
 
@@ -143,7 +142,7 @@ namespace Rijkshuisstijl.VersionManager.Models
             }
         }
 
-        public List<ContentVersionInfo> Versions
+        public List<ContentVersionInfoModel> Versions
         {
             get
             {
@@ -152,10 +151,10 @@ namespace Rijkshuisstijl.VersionManager.Models
                     return _versions;
                 }
 
-                _versions = new List<ContentVersionInfo>();
+                _versions = new List<ContentVersionInfoModel>();
                 foreach (ContentItem contentItem in _orchardServices.ContentManager.GetAllVersions(_contentItemId))
                 {
-                    _versions.Add(new ContentVersionInfo(_contentItemId, contentItem.VersionRecord.Id, _orchardServices, _timeOffSet, _versionManagerInfo));
+                    _versions.Add(new ContentVersionInfoModel(_contentItemId, contentItem.VersionRecord.Id, _orchardServices, _timeOffSet, _versionManagerInfoDataService));
                 }
                 return _versions;
             }
@@ -172,7 +171,7 @@ namespace Rijkshuisstijl.VersionManager.Models
 
         private ContentItem ContentItem
         {
-            get { return _orchardServices.ContentManager.Get(_contentItemId); }
+            get { return _orchardServices.ContentManager.Get(_contentItemId, VersionOptions.AllVersions); }
         }
 
     }

@@ -9,6 +9,6 @@ namespace Rijkshuisstijl.VersionManager.Services
 {
     public interface IVersionManager : IDependency
     {
-        ContentInfo GetContentInfo(int contentItemId);
+        ContentInfoModel GetContentInfo(int contentItemId);
     }
 }

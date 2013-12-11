@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Orchard;
 using Orchard.Caching;
 using Orchard.Data;
 using Orchard.Localization;
@@ -13,24 +12,22 @@ using Rijkshuisstijl.VersionManager.Models;
 
 #endregion
 
-namespace Rijkshuisstijl.VersionManager.Services
+namespace Rijkshuisstijl.VersionManager.DataServices
 {
-    public class VersionManagerInfo : IVersionManagerInfo
+    public class VersionManagerInfoDataService : IVersionManagerInfoDataService
     {
-        public const string SignalUpdateVersionManagerTrigger = "SignalUpdateVersionManagerRecords";
+        public const string VersionManagerCache = "Rijkshuisstijl.VersionManager.VersionManager";
         private readonly ICacheManager _cacheManager;
         private readonly IClock _clock;
-        private readonly INotifier _notifier;
         private readonly ISignals _signals;
         private readonly IRepository<VersionManagerRecord> _versionManagerRecords;
 
-        public VersionManagerInfo(IRepository<VersionManagerRecord> versionManagerRecords, ICacheManager cacheManager, ISignals signals, IClock clock, INotifier notifier)
+        public VersionManagerInfoDataService(IRepository<VersionManagerRecord> versionManagerRecords, ICacheManager cacheManager, ISignals signals, IClock clock, INotifier notifier)
         {
             _versionManagerRecords = versionManagerRecords;
             _cacheManager = cacheManager;
             _signals = signals;
             _clock = clock;
-            _notifier = notifier;
             T = NullLocalizer.Instance;
         }
 
@@ -42,22 +39,21 @@ namespace Rijkshuisstijl.VersionManager.Services
         {
             get
             {
-                List<VersionManagerRecord> versionManagerRecords = _cacheManager.Get("Rijkshuisstijl.VersionManager.VersionManagerRecords", ctx =>
+                List<VersionManagerRecord> versionManagerRecords = _cacheManager.Get(VersionManagerCache, ctx =>
                 {
-                    ctx.Monitor(_clock.When(TimeSpan.FromMinutes(60)));
-                    ctx.Monitor(_signals.When(SignalUpdateVersionManagerTrigger));
+                    ctx.Monitor(_clock.When(TimeSpan.FromHours(24)));
+                    ctx.Monitor(_signals.When(VersionManagerCache));
                     return _versionManagerRecords.Table.ToList();
                 });
                 return versionManagerRecords;
             }
         }
 
-        public void Update(VersionManagerRecord record)
+        public bool SetVersionManagerRecord(VersionManagerRecord record)
         {
             if (record.ContentItemId == 0 || record.ContentItemVersionId == 0)
             {
-                _notifier.Error(T("Could not update VersionManagerRecord because contentItemId or ContentItemVersionId is 0"));
-                return;
+                return false;
             }
 
             //Resolve current record if exist
@@ -69,8 +65,8 @@ namespace Rijkshuisstijl.VersionManager.Services
                 newRecord.Description = record.Description;
             }
             _versionManagerRecords.Update(newRecord);
-            _signals.Trigger(SignalUpdateVersionManagerTrigger);
-            _notifier.Information(T("Versionmanager information updated."));
+            _signals.Trigger(VersionManagerCache);
+            return true;
         }
 
         #endregion

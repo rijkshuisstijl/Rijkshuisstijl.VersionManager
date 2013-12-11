@@ -6,11 +6,11 @@ using Rijkshuisstijl.VersionManager.Models;
 
 #endregion
 
-namespace Rijkshuisstijl.VersionManager.Services
+namespace Rijkshuisstijl.VersionManager.DataServices
 {
-    public interface IVersionManagerInfo : IDependency
+    public interface IVersionManagerInfoDataService : IDependency
     {
         List<VersionManagerRecord> VersionManagerRecords { get; }
-        void Update(VersionManagerRecord record);
+        bool SetVersionManagerRecord(VersionManagerRecord record);
     }
 }

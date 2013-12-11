@@ -1,6 +1,7 @@
 ﻿#region
 
 using Orchard.Data.Migration;
+using Rijkshuisstijl.VersionManager.Models;
 
 #endregion
 
@@ -10,7 +11,7 @@ namespace Rijkshuisstijl.VersionManager
     {
         public int Create()
         {
-            SchemaBuilder.CreateTable("VersionManagerRecord", table => table
+            SchemaBuilder.CreateTable(typeof(VersionManagerRecord).Name, table => table
                 .Column<int>("Id", column => column.PrimaryKey().Identity())
                 .Column<int>("ContentItemId")
                 .Column<int>("ContentItemVersionId")

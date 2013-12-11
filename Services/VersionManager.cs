@@ -1,11 +1,9 @@
-﻿#region
+﻿#region Usings
 
 using System;
-using System.Diagnostics;
 using Orchard;
-using Orchard.ContentManagement.Records;
-using Orchard.Data;
 using Orchard.Time;
+using Rijkshuisstijl.VersionManager.DataServices;
 using Rijkshuisstijl.VersionManager.Models;
 
 #endregion
@@ -14,32 +12,26 @@ namespace Rijkshuisstijl.VersionManager.Services
 {
     public class VersionManager : IVersionManager
     {
-        private readonly IRepository<ContentItemVersionRecord> _contentItemVersionRepository;
         private readonly IOrchardServices _orchardServices;
         private readonly ITimeZoneSelector _timeZoneSelector;
-        private readonly IVersionManagerInfo _versionManagerInfo;
+        private readonly IVersionManagerInfoDataService _versionManagerInfoDataService;
         private readonly IWorkContextAccessor _workContextAccessor;
 
         public VersionManager(IOrchardServices orchardServices, ITimeZoneSelector timeZoneSelector,
-            IWorkContextAccessor workContextAccessor, IRepository<ContentItemVersionRecord> contentItemVersionRepository,
-            IVersionManagerInfo versionManagerInfo)
+            IWorkContextAccessor workContextAccessor,
+            IVersionManagerInfoDataService versionManagerInfoDataService)
         {
             _orchardServices = orchardServices;
             _timeZoneSelector = timeZoneSelector;
             _workContextAccessor = workContextAccessor;
-            _contentItemVersionRepository = contentItemVersionRepository;
-            _versionManagerInfo = versionManagerInfo;
+            _versionManagerInfoDataService = versionManagerInfoDataService;
         }
 
-        #region IVersionManager Members
-
-        public ContentInfo GetContentInfo(int contentItemId)
+        public ContentInfoModel GetContentInfo(int contentItemId)
         {
-            return new ContentInfo(contentItemId, _orchardServices, GetHoursOffSet(),
-                _contentItemVersionRepository, _versionManagerInfo);
+            return new ContentInfoModel(contentItemId, _orchardServices, GetHoursOffSet(), _versionManagerInfoDataService);
         }
 
-        #endregion
 
         private int GetHoursOffSet()
         {

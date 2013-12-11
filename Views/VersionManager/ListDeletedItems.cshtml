@@ -1,0 +1,51 @@
+﻿@using System.Text
+@using Orchard.Autoroute.Models
+@using Orchard.ContentManagement
+@using Orchard.Core.Common.Models
+@using Orchard.Core.Title.Models
+@model Rijkshuisstijl.VersionManager.ViewModels.Admin.ListDeletedItemsViewModel
+
+@{
+    Layout.Title = "Recycle Bin";
+}
+
+<fieldset class="contentItems">
+    <ul>
+
+        @foreach (ContentItem item in Model.RemovedItems)
+        {
+            <li>
+
+                <div class="summary">
+                    @{
+                        StringBuilder sb = new StringBuilder();
+
+                        string title = String.Format("Item {0}", item.Id);
+                        if (item.Has<TitlePart>() && !String.IsNullOrWhiteSpace(item.As<TitlePart>().Title))
+                        {
+                            title = item.As<TitlePart>().Title;
+                        }
+                        sb.AppendFormat("Id : {0}", item.Id);
+                        if (item.Has<AutoroutePart>() && !String.IsNullOrWhiteSpace(item.As<AutoroutePart>().Path))
+                        {
+                            sb.AppendFormat(" | route : {0}", item.As<AutoroutePart>().Path);
+                        }
+                        if (item.Has<CommonPart>())
+                        {
+                            sb.AppendFormat(" | owner : {0} | date deleted : {1}", item.As<CommonPart>().Owner.UserName, item.As<CommonPart>().ModifiedUtc);
+                        }
+
+                        <h3>@Html.Link(title, Url.Action("Preview", "Item", new { area = "Contents", id = item.Id, version = item.Version })) - @(item.TypeDefinition.DisplayName ?? item.ContentType)</h3>
+                        <p>@sb.ToString()</p>
+                        <div class="related">
+                            @Html.Link(T("Undelete").Text, Url.Action("Undelete", "VersionManager", new {area = "Rijkshuisstijl.VersionManager", id = item.VersionRecord.Id}))
+                            &nbsp;&#124;&nbsp;
+                            @Html.Link(T("View").Text, Url.Action("Preview", "Item", new {area = "Contents", id = item.Id, version = item.Version}))
+                        </div>
+                    }
+                </div>
+
+            </li>
+        }
+    </ul>
+</fieldset>
