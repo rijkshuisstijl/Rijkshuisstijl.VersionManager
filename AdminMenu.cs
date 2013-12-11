@@ -2,6 +2,7 @@
 
 using Orchard;
 using Orchard.Core.Contents;
+using Orchard.Data.Migration.Schema;
 using Orchard.UI.Navigation;
 
 #endregion
@@ -18,19 +19,16 @@ namespace Rijkshuisstijl.VersionManager
 
         public void GetNavigation(NavigationBuilder builder)
         {
-            builder
-                .Add(T("Rijkshuisstijl"), "1", LinkSubMenu);
+
+            builder.Add(T("Content"),
+               menu => menu
+                   .Add(T("Recycle Bin"), "2.5", item => item
+                       .Action("ListDeletedItems", "VersionManager", new { area = "Rijkshuisstijl.VersionManager" })
+                       .Permission(Permissions.EditContent)
+                       .LocalNav())
+               );
         }
 
 
-        private void LinkSubMenu(NavigationBuilder menu)
-        {
-            menu.Add(item => item
-                .Position("9")
-                .Caption(T("Recycle Bin"))
-                .Action("ListDeletedItems", "VersionManager", new {area = "Rijkshuisstijl.VersionManager"})
-                .Permission(Permissions.EditContent)
-                );
-        }
     }
 }
