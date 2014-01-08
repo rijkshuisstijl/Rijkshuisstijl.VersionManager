@@ -8,7 +8,7 @@
         @Html.ValidationSummary()
     </div>
 
-    @using (Html.BeginFormAntiForgeryPost("SetDescription"))
+    @using (Html.BeginFormAntiForgeryPost())
     {
         @Html.HiddenFor(m => m.ContentItemId)
         @Html.HiddenFor(m => m.ContentItemVersionId)
