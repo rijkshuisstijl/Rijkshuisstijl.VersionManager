@@ -52,12 +52,12 @@
                                     </ul>
                                     @if (String.IsNullOrEmpty(item.Description))
                                     {
-                                        @Html.ActionLink(T("no description").Text, "SetDescriptionPost", new {id = Model.ContentInfoModel.Id, versionId = item.Id}, new {@class = "description"})
+                                        @Html.ActionLink(T("no description").Text, "SetDescription", new {id = Model.ContentInfoModel.Id, versionId = item.Id}, new {@class = "description"})
                                     }
 
                                     else
                                     {
-                                        @Html.ActionLink(item.Description, "SetDescriptionPost", new {id = Model.ContentInfoModel.Id, versionId = item.Id}, new {@class = "description"})
+                                        @Html.ActionLink(item.Description, "SetDescription", new {id = Model.ContentInfoModel.Id, versionId = item.Id}, new {@class = "description"})
                                     }
                                    
                                 </div>
